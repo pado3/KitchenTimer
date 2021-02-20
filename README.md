@@ -13,5 +13,6 @@ This repository include these file (& folder):<br />
   <li>boards_int8MHz.txt : bootloader settings of ATmega328P with Arduino IDE</li>
 </ol>
 <p></p>
-I plan to write a blog on this subject.　Wait for moment, please.
+I wrote a blog on the background and design in detail. Please access if you need.<br />
+https://pado.tea-nifty.com/top/2021/02/post-6711f5.html 
 <p></p>
