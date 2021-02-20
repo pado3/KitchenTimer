@@ -1,7 +1,7 @@
 # KitchenTimer
 minimum kitchen timer with Arduino, Graphic LCD
 <p></p>
-Four preset timer and additional 1 minuteis presented.<br />
+Four preset timer and additional 1 minute is presented.<br />
 The sketch is written with Arduino IDE 1.8.13, run on ATmega328P with internal 8MHz clock, display to AQM1248A small graphic LCD.  I feel the output of piezoelectric sounder is too small, then I use a transformer recycled from security buzzer.
 <p></p>
 This repository include these file (& folder):<br />
