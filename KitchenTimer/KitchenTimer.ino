@@ -1,5 +1,5 @@
 // Kitchen timer w/ATmega328P and AQM1248A Graphic LCD. 
-//  handmade by @pado3 v1.0 2021/02/17
+//  handmade by @pado3 v1.1 2021/02/22
 
 // font data in EEPROM, use kt_EEPROMw.ino
 #include <EEPROM.h>
@@ -102,9 +102,20 @@ void loop() {
   byte b[4], i, j=0, f_incsub=0;
   lcd_clear();
   readMM();
+  if (f_inc && MM == 0) {  // v1.1, wakeup by +1min interrupt
+    Serial.print(F(" set MM to 1 min with interrupt."));
+    lcd_bw(true);
+    MM=1;
+    f_incsub++;
+  }
   if (0<MM && MM<=99) { // skip counter after RESET (byte has positive only so 0<MM has no meanings)
     for (i=MM; 0<=i && i<=99; i--) {  // minutes, 0-99, byte has positive value only
-      do {                            // seconds from zero
+      do {                            // seconds j from zero
+        if (f_int) {  // v1.1, countdown from MM:00 when minutes set interrupt is happend
+          i=MM;
+          j=0;
+          f_int = false;
+        }
         b[0] = (byte) (i/10);           // 1st char for display (10min), cast clearly to prevent bug
         b[1] = (byte) (i - 10*(i/10));  // 2nd (1min)
         b[2] = (byte) (j/10);           // 3rd (10sec)
@@ -144,7 +155,7 @@ void loop() {
           digitalWrite(LED,LOW);
           delay(500);
         }
-        if (f_inc == true) {  // +1min interrupt happened
+        if (f_inc) {  // +1min interrupt happened
           if(f_incsub == 0) { // prevent chattering for 3sec
             Serial.print(F(" Increment 1 min with interrupt."));
             lcd_bw(true);
@@ -164,11 +175,6 @@ void loop() {
         lcd_cmd(0x81);      // set electronic volume mode (EVMS) *set before EVRS
         lcd_cmd(contrast);  // set electronic volume resister (EVRS)  *contrast, default 1c
         digitalWrite(CH, LOW);
-        if (f_int) {  // interrupt of minutes set is happend
-          i=MM;
-          j=0;
-          f_int = false;
-        }
         j--;
         // Serial.print(" AINT:"); Serial.print(analogRead(AINT));
         Serial.println(); // debug: end of second loop
@@ -288,7 +294,7 @@ void play_melody() {
 // DINT treatment (+1min increment)
 void incm() {
   // Serial.println(" DINT happen");
-  f_inc=1;  // set increment flag;
+  f_inc=true; // set increment flag;
 }
 
 // AINT treatment (sleep, wakeup)
